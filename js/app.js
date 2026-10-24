@@ -260,34 +260,46 @@ function calcularEjercicio() {
     let desarrollo = [];
     let explicacion = '';
     
-    switch (ejercicioActual.tipo) {
-      case 'fotones_basico':
-        resultados = calcularFotonesBasico(ejercicioActual, desarrollo);
-        break;
-      case 'flujo_fotones':
-        resultados = calcularFlujoFotones(ejercicioActual, desarrollo);
-        break;
-      case 'pulsos':
-        resultados = calcularPulsos(ejercicioActual, desarrollo);
-        break;
-      case 'eficiencia':
-        resultados = calcularEficiencia(ejercicioActual, desarrollo);
-        break;
-      case 'comparacion':
-        resultados = calcularComparacion(ejercicioActual, desarrollo);
-        break;
-      case 'comparacion_flujo':
-        resultados = calcularComparacionFlujo(ejercicioActual, desarrollo);
-        break;
-      case 'radiacion':
-        resultados = calcularRadiacion(ejercicioActual, desarrollo);
-        break;
-      case 'momento_foton':
-        resultados = calcularMomentoFoton(ejercicioActual, desarrollo);
-        break;
-      case 'fotoelectrico':
-        resultados = calcularFotoelectricoUmbral(ejercicioActual, desarrollo);
-        break;
+    // Forzar funciones específicas por número de ejercicio
+    if (ejercicioActual.numero === 21) {
+      resultados = calcularFotoelectricoUmbral(ejercicioActual, desarrollo);
+    } else if (ejercicioActual.numero === 4) {
+      resultados = calcularFotonesBasico(ejercicioActual, desarrollo);
+    } else if (ejercicioActual.numero === 5) {
+      resultados = calcularFotonesBasico(ejercicioActual, desarrollo);
+    } else if (ejercicioActual.numero === 6) {
+      resultados = calcularFotonesBasico(ejercicioActual, desarrollo);
+    } else if (ejercicioActual.numero === 8) {
+      resultados = calcularFotonesBasico(ejercicioActual, desarrollo);
+    } else {
+      switch (ejercicioActual.tipo) {
+        case 'fotones_basico':
+          resultados = calcularFotonesBasico(ejercicioActual, desarrollo);
+          break;
+        case 'flujo_fotones':
+          resultados = calcularFlujoFotones(ejercicioActual, desarrollo);
+          break;
+        case 'pulsos':
+          resultados = calcularPulsos(ejercicioActual, desarrollo);
+          break;
+        case 'eficiencia':
+          resultados = calcularEficiencia(ejercicioActual, desarrollo);
+          break;
+        case 'comparacion':
+          resultados = calcularComparacion(ejercicioActual, desarrollo);
+          break;
+        case 'comparacion_flujo':
+          resultados = calcularComparacionFlujo(ejercicioActual, desarrollo);
+          break;
+        case 'radiacion':
+          resultados = calcularRadiacion(ejercicioActual, desarrollo);
+          break;
+        case 'momento_foton':
+          resultados = calcularMomentoFoton(ejercicioActual, desarrollo);
+          break;
+        case 'fotoelectrico':
+          resultados = calcularFotoelectricoUmbral(ejercicioActual, desarrollo);
+          break;
       case 'fotoelectrico_completo':
         resultados = calcularFotoelectrico(ejercicioActual, desarrollo);
         break;
@@ -324,10 +336,11 @@ function calcularEjercicio() {
       case 'pruebas':
         resultados = mostrarPruebas(ejercicioActual, desarrollo);
         break;
-      default:
-        desarrollo.push({ titulo: 'Información', contenido: 'Este ejercicio se resuelve conceptualmente. Revise el enunciado, fórmulas y explicación.' });
-        resultados.info = { valor: 'Ver solución', unidad: '', nombre: 'Estado' };
-        break;
+        default:
+          desarrollo.push({ titulo: 'Información', contenido: 'Este ejercicio se resuelve conceptualmente. Revise el enunciado, fórmulas y explicación.' });
+          resultados.info = { valor: 'Ver solución', unidad: '', nombre: 'Estado' };
+          break;
+      }
     }
     
     // Mostrar resultados
