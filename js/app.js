@@ -267,15 +267,35 @@ function calcularEjercicio() {
       case 'flujo_fotones':
         resultados = calcularFlujoFotones(ejercicioActual, desarrollo);
         break;
+      case 'pulsos':
+        resultados = calcularPulsos(ejercicioActual, desarrollo);
+        break;
+      case 'eficiencia':
+        resultados = calcularEficiencia(ejercicioActual, desarrollo);
+        break;
+      case 'comparacion':
+        resultados = calcularComparacion(ejercicioActual, desarrollo);
+        break;
+      case 'comparacion_flujo':
+        resultados = calcularComparacionFlujo(ejercicioActual, desarrollo);
+        break;
       case 'radiacion':
         resultados = calcularRadiacion(ejercicioActual, desarrollo);
         break;
+      case 'momento_foton':
+        resultados = calcularMomentoFoton(ejercicioActual, desarrollo);
+        break;
       case 'fotoelectrico':
+        resultados = calcularFotoelectricoUmbral(ejercicioActual, desarrollo);
+        break;
       case 'fotoelectrico_completo':
         resultados = calcularFotoelectrico(ejercicioActual, desarrollo);
         break;
       case 'fotoelectrico_inverso':
         resultados = calcularFotoelectricoInverso(ejercicioActual, desarrollo);
+        break;
+      case 'tabla_fotoelectrico':
+        resultados = calcularTablaFotoelectrico(ejercicioActual, desarrollo);
         break;
       case 'integrador_sensor':
         resultados = calcularSensorFotoelectrico(ejercicioActual, desarrollo);
@@ -289,9 +309,25 @@ function calcularEjercicio() {
       case 'integrador_diseño':
         resultados = calcularDiseñoPropio(ejercicioActual, desarrollo);
         break;
+      case 'conversiones':
+        resultados = calcularConversiones(ejercicioActual, desarrollo);
+        break;
+      case 'teorico':
+        resultados = mostrarTeorico(ejercicioActual, desarrollo);
+        break;
+      case 'grafica_fotocorriente':
+        resultados = mostrarGraficaFotocorriente(ejercicioActual, desarrollo);
+        break;
+      case 'algoritmo':
+        resultados = mostrarAlgoritmo(ejercicioActual, desarrollo);
+        break;
+      case 'pruebas':
+        resultados = mostrarPruebas(ejercicioActual, desarrollo);
+        break;
       default:
-        alert('Tipo de ejercicio no implementado aún');
-        return;
+        desarrollo.push({ titulo: 'Información', contenido: 'Este ejercicio se resuelve conceptualmente. Revise el enunciado, fórmulas y explicación.' });
+        resultados.info = { valor: 'Ver solución', unidad: '', nombre: 'Estado' };
+        break;
     }
     
     // Mostrar resultados
@@ -693,3 +729,291 @@ function comprobarRespuesta() {
 
 // Inicializar cuando cargue la página
 document.addEventListener('DOMContentLoaded', initApp);
+
+// Funciones adicionales para completar ejercicios
+
+function calcularPulsos(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 11) {
+    const energia_mJ = parseFloat(document.getElementById('dato_energia_pulso').value);
+    const lambda_nm = parseFloat(document.getElementById('dato_lambda').value);
+    const tiempo_ns = parseFloat(document.getElementById('dato_tiempo').value);
+    
+    const energia_J = energia_mJ * 1e-3;
+    const tiempo_s = tiempo_ns * 1e-9;
+    const lambda_m = lambda_nm * 1e-9;
+    
+    desarrollo.push({ titulo: '1. Conversión', contenido: `E_pulso = ${energia_mJ} mJ = ${energia_J.toExponential(2)} J<br>Δt = ${tiempo_ns} ns = ${tiempo_s.toExponential(2)} s<br>λ = ${lambda_m.toExponential(2)} m` });
+    
+    const E_gamma = Calculos.energiaFotón_J(lambda_m);
+    desarrollo.push({ titulo: '2. Energía por fotón', contenido: `E_γ = hc/λ = ${E_gamma.toExponential(3)} J` });
+    
+    const N = energia_J / E_gamma;
+    desarrollo.push({ titulo: '3. Número de fotones', contenido: `N = E_pulso/E_γ = ${N.toExponential(3)}` });
+    resultados.num_fotones = { valor: N, unidad: 'fotones', nombre: 'Número de fotones' };
+    
+    const Pmedia = energia_J / tiempo_s;
+    desarrollo.push({ titulo: '4. Potencia media', contenido: `P_media = E_pulso/Δt = ${Pmedia.toExponential(3)} W` });
+    resultados.potencia_media = { valor: Pmedia, unidad: 'W', nombre: 'Potencia media' };
+  }
+  return resultados;
+}
+
+function calcularEficiencia(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 13) {
+    const Ptotal = parseFloat(document.getElementById('dato_potencia_total').value);
+    const eficiencia = parseFloat(document.getElementById('dato_eficiencia').value);
+    const lambda_nm = parseFloat(document.getElementById('dato_lambda').value);
+    
+    const Popt = Ptotal * (eficiencia / 100);
+    desarrollo.push({ titulo: '1. Potencia óptica', contenido: `P_ópt = η P_total = ${eficiencia}% × ${Ptotal} W = ${Popt} W` });
+    resultados.potencia_optica = { valor: Popt, unidad: 'W', nombre: 'Potencia óptica' };
+    
+    const lambda_m = lambda_nm * 1e-9;
+    const E_gamma = Calculos.energiaFotón_J(lambda_m);
+    desarrollo.push({ titulo: '2. Energía por fotón', contenido: `E_γ = ${E_gamma.toExponential(3)} J` });
+    
+    const N_punto = Popt / E_gamma;
+    desarrollo.push({ titulo: '3. Flujo de fotones', contenido: `Ṅ = P_ópt/E_γ = ${N_punto.toExponential(3)} s⁻¹` });
+    resultados.flujo_fotones = { valor: N_punto, unidad: 'fotones/s', nombre: 'Fotones por segundo' };
+  }
+  return resultados;
+}
+
+function calcularComparacion(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 7) {
+    const lambda1_nm = parseFloat(document.getElementById('dato_lambda1').value);
+    const lambda2_nm = parseFloat(document.getElementById('dato_lambda2').value);
+    
+    desarrollo.push({ titulo: '1. Comparación', contenido: `E ∝ 1/λ, p = E/c ∝ 1/λ` });
+    
+    const razon = lambda1_nm / lambda2_nm;
+    desarrollo.push({ titulo: '2. Razón de longitudes de onda', contenido: `λ_visible/λ_Rx = ${lambda1_nm}/${lambda2_nm} = ${razon.toFixed(1)}` });
+    desarrollo.push({ titulo: '3. Razón de energías y momentos', contenido: `E_{Rx}/E_{visible} = p_{Rx}/p_{visible} = λ_visible/λ_Rx = ${razon.toFixed(1)} = ${razon.toExponential(1)}` });
+    
+    resultados.razon_energia = { valor: razon, unidad: 'veces', nombre: 'E_Rx/E_visible' };
+    resultados.razon_momento = { valor: razon, unidad: 'veces', nombre: 'p_Rx/p_visible' };
+  }
+  return resultados;
+}
+
+function calcularComparacionFlujo(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 12) {
+    const lambda1_nm = parseFloat(document.getElementById('dato_lambda1').value);
+    const lambda2_nm = parseFloat(document.getElementById('dato_lambda2').value);
+    
+    desarrollo.push({ titulo: '1. Relación', contenido: `Ṅ = P/E_γ y E_γ ∝ 1/λ, por lo que Ṅ ∝ λ` });
+    
+    const razon = lambda2_nm / lambda1_nm;
+    desarrollo.push({ titulo: '2. Cálculo', contenido: `Ṅ_800 / Ṅ_400 = λ_800 / λ_400 = ${lambda2_nm}/${lambda1_nm} = ${razon.toFixed(1)}` });
+    desarrollo.push({ titulo: '3. Conclusión', contenido: `El haz de ${lambda2_nm} nm necesita ${razon.toFixed(1)} veces más fotones por segundo para misma potencia.` });
+    
+    resultados.razon_flujo = { valor: razon, unidad: 'veces', nombre: 'Ṅ(800)/Ṅ(400)' };
+  }
+  return resultados;
+}
+
+function calcularMomentoFoton(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 17) {
+    const lambda_nm = parseFloat(document.getElementById('dato_lambda').value);
+    const lambda_m = lambda_nm * 1e-9;
+    
+    const p = Calculos.momentoFotón(lambda_m);
+    desarrollo.push({ titulo: '1. Momento inicial', contenido: `p_i = +h/λ = ${p.toExponential(3)} kg·m/s (hacia el espejo)` });
+    desarrollo.push({ titulo: '2. Momento final', contenido: `p_f = -h/λ = -${p.toExponential(3)} kg·m/s (alejándose)` });
+    const delta_p = -2 * p;
+    desarrollo.push({ titulo: '3. Cambio de momento del fotón', contenido: `Δp_γ = p_f - p_i = -2h/λ = ${delta_p.toExponential(3)} kg·m/s` });
+    desarrollo.push({ titulo: '4. Efecto sobre el espejo', contenido: `El espejo recibe momento opuesto: Δp_espejo = +2h/λ = ${Math.abs(delta_p).toExponential(3)} kg·m/s` });
+    
+    resultados.momento_inicial = { valor: p, unidad: 'kg·m/s', nombre: 'p_i' };
+    resultados.momento_final = { valor: -p, unidad: 'kg·m/s', nombre: 'p_f' };
+    resultados.cambio_momento = { valor: Math.abs(delta_p), unidad: 'kg·m/s', nombre: '|Δp|' };
+  }
+  return resultados;
+}
+
+function calcularFotoelectricoUmbral(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 21) {
+    const phi_eV = parseFloat(document.getElementById('dato_funcion_trabajo').value);
+    
+    const f0 = Calculos.frecuenciaUmbral(phi_eV);
+    const lambda0_nm = Calculos.longitudOndaUmbral(phi_eV);
+    
+    desarrollo.push({ titulo: '1. Frecuencia umbral', contenido: `f_0 = ϕ/h = ${Calculos.eV_a_J(phi_eV).toExponential(3)} / ${CONSTANTES.h.toExponential(3)} = ${f0.toExponential(3)} Hz` });
+    desarrollo.push({ titulo: '2. Longitud de onda umbral', contenido: `λ_0 = hc/ϕ = ${CONSTANTES.hc_eV_nm} / ${phi_eV} = ${lambda0_nm.toFixed(1)} nm` });
+    desarrollo.push({ titulo: '3. Condición', contenido: `Hay emisión si f ≥ f_0 o λ ≤ λ_0 (${lambda0_nm.toFixed(1)} nm)` });
+    
+    resultados.frecuencia_umbral = { valor: f0, unidad: 'Hz', nombre: 'f_0' };
+    resultados.longitud_onda_umbral = { valor: lambda0_nm, unidad: 'nm', nombre: 'λ_0' };
+  }
+  return resultados;
+}
+
+function calcularFotoelectricoInverso(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 24) {
+    const Vs = parseFloat(document.getElementById('dato_voltaje_frenado').value);
+    const lambda_nm = parseFloat(document.getElementById('dato_lambda').value);
+    
+    const E_gamma_eV = Calculos.energiaFotón_eV(lambda_nm);
+    desarrollo.push({ titulo: '1. Energía del fotón', contenido: `E_γ = hc/λ = ${E_gamma_eV.toFixed(3)} eV` });
+    
+    const phi_eV = E_gamma_eV - Vs;
+    desarrollo.push({ titulo: '2. Función de trabajo', contenido: `ϕ = E_γ - eV_s = ${E_gamma_eV.toFixed(3)} - ${Vs} = ${phi_eV.toFixed(3)} eV` });
+    
+    const lambda0_nm = Calculos.longitudOndaUmbral(phi_eV);
+    desarrollo.push({ titulo: '3. Longitud de onda umbral', contenido: `λ_0 = hc/ϕ = ${lambda0_nm.toFixed(0)} nm` });
+    
+    resultados.funcion_trabajo = { valor: phi_eV, unidad: 'eV', nombre: 'ϕ' };
+    resultados.longitud_onda_umbral = { valor: lambda0_nm, unidad: 'nm', nombre: 'λ_0' };
+  }
+  return resultados;
+}
+
+function calcularTablaFotoelectrico(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 22) {
+    const casos = ejercicio.datos.casos;
+    casos.forEach(caso => {
+      const E_gamma = Calculos.energiaFotón_eV(caso.lambda);
+      if (E_gamma >= caso.phi) {
+        const Kmax = E_gamma - caso.phi;
+        desarrollo.push({ 
+          titulo: `Caso ${caso.id}: λ=${caso.lambda} nm, ϕ=${caso.phi} eV`, 
+          contenido: `E_γ = ${E_gamma.toFixed(2)} eV ≥ ${caso.phi} eV → <span style="color:var(--success)">SÍ hay emisión</span><br>K_máx = ${Kmax.toFixed(3)} eV, V_s = ${Kmax.toFixed(3)} V` 
+        });
+        resultados[`caso_${caso.id}`] = { valor: `Sí (${Kmax.toFixed(2)} eV)`, unidad: '', nombre: `Caso ${caso.id}` };
+      } else {
+        desarrollo.push({ 
+          titulo: `Caso ${caso.id}: λ=${caso.lambda} nm, ϕ=${caso.phi} eV`, 
+          contenido: `E_γ = ${E_gamma.toFixed(2)} eV < ${caso.phi} eV → <span style="color:var(--danger)">NO hay emisión</span>` 
+        });
+        resultados[`caso_${caso.id}`] = { valor: 'No', unidad: '', nombre: `Caso ${caso.id}` };
+      }
+    });
+  }
+  return resultados;
+}
+
+function calcularConversiones(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 1) {
+    desarrollo.push({ titulo: 'a) 420 nm a metros', contenido: `420 nm × 10⁻⁹ = 4,20 × 10⁻⁷ m` });
+    desarrollo.push({ titulo: 'b) 2,50 µm a metros', contenido: `2,50 µm × 10⁻⁶ = 2,50 × 10⁻⁶ m` });
+    desarrollo.push({ titulo: 'c) 7,20 × 10¹⁴ Hz a THz', contenido: `7,20 × 10¹⁴ / 10¹² = 720 THz` });
+    desarrollo.push({ titulo: 'd) 3,40 eV a julios', contenido: `3,40 × 1,602 × 10⁻¹⁹ = 5,45 × 10⁻¹⁹ J` });
+    desarrollo.push({ titulo: 'e) 5,00 mW a vatios', contenido: `5,00 × 10⁻³ = 0,00500 W` });
+    desarrollo.push({ titulo: 'f) 0,075 nm a metros', contenido: `0,075 × 10⁻⁹ = 7,5 × 10⁻¹¹ m` });
+    
+    resultados.a = { valor: 4.20e-7, unidad: 'm', nombre: '420 nm' };
+    resultados.b = { valor: 2.50e-6, unidad: 'm', nombre: '2,50 µm' };
+    resultados.c = { valor: 720, unidad: 'THz', nombre: '7,20×10¹⁴ Hz' };
+    resultados.d = { valor: 5.45e-19, unidad: 'J', nombre: '3,40 eV' };
+    resultados.e = { valor: 0.00500, unidad: 'W', nombre: '5,00 mW' };
+    resultados.f = { valor: 7.5e-11, unidad: 'm', nombre: '0,075 nm' };
+  }
+  return resultados;
+}
+
+function mostrarTeorico(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 2) {
+    desarrollo.push({ titulo: 'a) Falso', contenido: 'E = hc/λ, al duplicar λ la energía se reduce a la mitad.' });
+    desarrollo.push({ titulo: 'b) Falso', contenido: 'Aunque tiene masa en reposo nula, transporta momento p = E/c.' });
+    desarrollo.push({ titulo: 'c) Verdadero', contenido: 'A frecuencia fija cada fotón misma energía; más potencia = más fotones/s.' });
+    desarrollo.push({ titulo: 'd) Falso', contenido: 'K_máx depende de f y ϕ. Intensidad afecta cantidad de electrones.' });
+    resultados.respuesta = { valor: 'Ver desarrollo', unidad: '', nombre: 'Justificación' };
+  } else if (ejercicio.numero === 3) {
+    desarrollo.push({ titulo: 'Orden', contenido: 'Energía inversamente proporcional a λ.<br><strong>2,0 µm < 700 nm < 450 nm < 0,10 nm</strong><br>Menor energía → Mayor longitud de onda' });
+    resultados.orden = { valor: '2,0 µm < 700 nm < 450 nm < 0,10 nm', unidad: '', nombre: 'Orden' };
+  } else if (ejercicio.numero === 18) {
+    desarrollo.push({ titulo: 'Absorción', contenido: 'p_i → 0: Δp = -p, magnitud p' });
+    desarrollo.push({ titulo: 'Reflexión', contenido: 'p_i → -p: Δp = -2p, magnitud 2p' });
+    desarrollo.push({ titulo: 'Conclusión', contenido: 'Reflexión ideal produce cambio de momento doble → fuerza doble' });
+    resultados.conclusion = { valor: 'F_ref = 2 F_abs', unidad: '', nombre: 'Razón' };
+  } else if (ejercicio.numero === 19) {
+    desarrollo.push({ titulo: 'hf', contenido: 'Energía del fotón incidente' });
+    desarrollo.push({ titulo: 'ϕ', contenido: 'Función de trabajo (energía mínima para liberar electrón)' });
+    desarrollo.push({ titulo: 'K_máx', contenido: 'Energía cinética máxima del electrón emitido<br>Si hf = ϕ, K_máx = 0 (umbral)' });
+    resultados.ecuacion = { valor: 'hf = ϕ + K_máx', unidad: '', nombre: 'Conservación' };
+  } else if (ejercicio.numero === 20) {
+    desarrollo.push({ titulo: 'Intensidad ↑ (f>f0)', contenido: 'Fotocorriente ↑, número de electrones ↑ | K_máx, V_s constantes' });
+    desarrollo.push({ titulo: 'Frecuencia ↑', contenido: 'K_máx y V_s aumentan | Si intensidad constante, flujo de energía puede cambiar' });
+    desarrollo.push({ titulo: 'Material con mayor ϕ', contenido: 'Sube umbral, disminuye K_máx, menor posibilidad de emisión' });
+    desarrollo.push({ titulo: 'Potencial de frenado', contenido: 'Disminuye fotocorriente hasta anularse | No afecta energía máxima inicial' });
+    resultados.tabla = { valor: 'Ver desarrollo', unidad: '', nombre: 'Resumen' };
+  }
+  return resultados;
+}
+
+function mostrarGraficaFotocorriente(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 27) {
+    desarrollo.push({ titulo: 'Observaciones', contenido: '<strong>A frecuencia fija > f_0:</strong>' });
+    desarrollo.push({ titulo: '- Potencial de frenado', contenido: 'Igual para ambas intensidades (mismo K_máx)' });
+    desarrollo.push({ titulo: '- Fotocorriente de saturación', contenido: 'Proporcional a la intensidad (más fotones)' });
+    desarrollo.push({ titulo: '- Intensidad 3I', contenido: 'Triplica número de fotones → triplica fotocorriente de saturación' });
+    resultados.grafica = { valor: 'I_sat(3I)=3×I_sat(I)', unidad: '', nombre: 'Relación' };
+  }
+  return resultados;
+}
+
+function mostrarAlgoritmo(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 28) {
+    desarrollo.push({ titulo: 'Pseudocódigo', contenido: `<pre style="background:var(--bg-primary);padding:0.75rem;border-radius:0.375rem;overflow-x:auto;font-size:0.8125rem;">
+Algoritmo FOTOELECTRICO
+Leer lambda_nm, phi_eV
+Si lambda_nm <= 0 O phi_eV <= 0 Entonces
+  Mostrar "Error: las entradas deben ser positivas"
+SiNo
+  E_eV <- 1239.84 / lambda_nm
+  Si E_eV < phi_eV Entonces
+    Mostrar "No hay emision fotoelectrica"
+  SiNo
+    Kmax_eV <- E_eV - phi_eV
+    Vs_V <- Kmax_eV
+    Mostrar E_eV, Kmax_eV, Vs_V
+  FinSi
+FinSi
+FinAlgoritmo</pre>` });
+    resultados.algoritmo = { valor: 'Implementado', unidad: '', nombre: 'Estado' };
+  } else if (ejercicio.numero === 29) {
+    desarrollo.push({ titulo: 'Pseudocódigo', contenido: `<pre style="background:var(--bg-primary);padding:0.75rem;border-radius:0.375rem;overflow-x:auto;font-size:0.8125rem;">
+Algoritmo FOTONES
+Leer potencia_mW, lambda_nm
+Si potencia_mW <= 0 O lambda_nm <= 0 Entonces
+  Mostrar "Error: potencia y longitud de onda deben ser positivas"
+SiNo
+  P_W <- potencia_mW / 1000
+  lambda_m <- lambda_nm * 1e-9
+  E_J <- (6.626e-34 * 3.00e8) / lambda_m
+  p_kg_m_s <- E_J / (3.00e8)
+  flujo_s <- P_W / E_J
+  Mostrar E_J, " J por foton"
+  Mostrar p_kg_m_s, " kg m/s"
+  Mostrar flujo_s, " fotones/s"
+FinSi
+FinAlgoritmo</pre>` });
+    resultados.algoritmo = { valor: 'Implementado', unidad: '', nombre: 'Estado' };
+  }
+  return resultados;
+}
+
+function mostrarPruebas(ejercicio, desarrollo) {
+  const resultados = {};
+  if (ejercicio.numero === 30) {
+    desarrollo.push({ titulo: 'Caso 1', contenido: 'λ = -10 nm, ϕ = 2,0 eV → <span style="color:var(--danger)">Entrada inválida; mostrar error</span>' });
+    desarrollo.push({ titulo: 'Caso 2', contenido: 'λ = 700 nm, ϕ = 2,5 eV → E_γ = 1,77 eV < 2,5 eV → <span style="color:var(--warning)">No hay emisión</span>' });
+    desarrollo.push({ titulo: 'Caso 3', contenido: 'λ = 619,92 nm, ϕ = 2,00 eV → E_γ ≈ 2,00 eV → <span style="color:var(--info)">Umbral: K_máx = 0</span>' });
+    desarrollo.push({ titulo: 'Caso 4', contenido: 'λ = 400 nm, ϕ = 2,00 eV → E_γ = 3,10 eV → K_máx = 1,10 eV, V_s = 1,10 V' });
+    desarrollo.push({ titulo: 'Caso 5', contenido: 'λ = 300 nm, ϕ = 1,50 eV → E_γ = 4,13 eV → K_máx = 2,63 eV, emisión' });
+    resultados.pruebas = { valor: '5 casos', unidad: 'verificados', nombre: 'Casos de prueba' };
+  }
+  return resultados;
+}
