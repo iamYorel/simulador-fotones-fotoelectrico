@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Fotones y Efecto Fotoeléctrico - Universidad de La Guajira</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1>
+                ⚛️ Simulador de Fotones y Efecto Fotoeléctrico
+            </h1>
+            <div class="header-controls">
+                <select id="modeSelector" class="mode-selector">
+                    <option value="estudio">📚 Modo de estudio</option>
+                    <option value="practica">✏️ Modo de práctica</option>
+                </select>
+                <button id="themeToggle" class="theme-toggle">🌙 Modo oscuro</button>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>📑 Ejercicios</h2>
+                    <input type="text" id="searchInput" class="search-box" placeholder="🔍 Buscar ejercicio...">
+                </div>
+                <div class="temas-container" id="temasContainer">
+                    <!-- Se genera dinámicamente -->
+                </div>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="content-area">
+                <!-- Pantalla de bienvenida -->
+                <div id="welcomeScreen" class="welcome-screen">
+                    <h2>Bienvenido al Simulador Interactivo</h2>
+                    <p>
+                        Herramienta de estudio para los 34 ejercicios del taller de fotones y efecto fotoeléctrico.<br>
+                        Desarrollado para Yorel Davis Diaz Arevalo y Sebastian Alberto Radillo Roa<br>
+                        Universidad de La Guajira
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <h3>🧮 Cálculos Interactivos</h3>
+                            <p>Modifica los datos y observa cómo se actualizan los resultados automáticamente</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>📊 Gráficas Dinámicas</h3>
+                            <p>Visualiza relaciones entre magnitudes con gráficas interactivas</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>⚡ Simulador Visual</h3>
+                            <p>Representación animada del efecto fotoeléctrico</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>📚 Modo Estudio/Práctica</h3>
+                            <p>Aprende con el procedimiento completo o practica resolviendo por ti mismo</p>
+                        </div>
+                    </div>
+                    <p style="margin-top: 2rem; color: var(--text-secondary);">
+                        Selecciona un ejercicio del menú lateral para comenzar
+                    </p>
+                </div>
+
+                <!-- Panel de ejercicio -->
+                <div id="exercisePanel" class="exercise-panel hidden">
+                    <!-- Se genera dinámicamente -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="data/ejercicios.js"></script>
+    <script src="js/calculos.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
