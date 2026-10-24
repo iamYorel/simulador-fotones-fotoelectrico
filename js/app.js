@@ -260,6 +260,8 @@ function calcularEjercicio() {
     let desarrollo = [];
     let explicacion = '';
     
+    console.log('Ejercicio:', ejercicioActual.numero, 'Tipo:', ejercicioActual.tipo);
+    
     // Forzar funciones específicas por número de ejercicio
     if (ejercicioActual.numero === 21) {
       resultados = calcularFotoelectricoUmbral(ejercicioActual, desarrollo);
