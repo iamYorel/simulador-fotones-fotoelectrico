@@ -255,12 +255,49 @@ function calcularEjercicio() {
       return;
     }
     
+    // FORZAR EJERCICIO 21
+    if (ejercicioActual.numero === 21) {
+      let desarrollo21 = [];
+      const phi_eV = parseFloat(document.getElementById('dato_funcion_trabajo').value);
+      desarrollo21.push({ titulo: '1. Datos', contenido: `ϕ = ${phi_eV} eV` });
+      const phi_J = Calculos.eV_a_J(phi_eV);
+      desarrollo21.push({ titulo: '2. Conversión a julios', contenido: `ϕ = ${phi_eV} × 1,602×10⁻¹⁹ = ${phi_J.toExponential(3)} J` });
+      const f0 = Calculos.frecuenciaUmbral(phi_eV);
+      desarrollo21.push({ titulo: '3. Frecuencia umbral', contenido: `f₀ = ϕ/h = ${phi_J.toExponential(3)} / ${CONSTANTES.h.toExponential(3)} = ${f0.toExponential(3)} Hz` });
+      const lambda0_nm = Calculos.longitudOndaUmbral(phi_eV);
+      desarrollo21.push({ titulo: '4. Longitud de onda umbral', contenido: `λ₀ = hc/ϕ = ${CONSTANTES.hc_eV_nm} / ${phi_eV} = ${lambda0_nm.toFixed(2)} nm` });
+      desarrollo21.push({ titulo: '5. Condición de emisión', contenido: `Habrá emisión fotoeléctrica si la frecuencia f ≥ f₀ o si la longitud de onda λ ≤ λ₀ = ${lambda0_nm.toFixed(2)} nm` });
+      const res21 = {
+        frecuencia_umbral: { valor: f0, unidad: 'Hz', nombre: 'Frecuencia umbral f₀' },
+        longitud_onda_umbral: { valor: lambda0_nm, unidad: 'nm', nombre: 'Longitud de onda umbral λ₀' }
+      };
+      document.getElementById('solucionSection').classList.remove('hidden');
+      document.getElementById('resultadosSection').classList.remove('hidden');
+      const pasosDiv = document.getElementById('desarrolloPasos');
+      pasosDiv.innerHTML = '';
+      desarrollo21.forEach((paso, idx) => {
+        const div = document.createElement('div');
+        div.className = 'desarrollo-paso';
+        div.innerHTML = `<h4>Paso ${idx + 1}. ${paso.titulo}</h4><div class="desarrollo-contenido">${paso.contenido}</div>`;
+        pasosDiv.appendChild(div);
+      });
+      const grid = document.getElementById('resultadosGrid');
+      grid.innerHTML = '';
+      Object.values(res21).forEach(res => {
+        const card = document.createElement('div');
+        card.className = 'resultado-card';
+        let valorStr = typeof res.valor === 'number' ? (Math.abs(res.valor) > 1000 || Math.abs(res.valor) < 0.001 ? res.valor.toExponential(3) : res.valor.toFixed(3)) : res.valor;
+        card.innerHTML = `<div class="resultado-valor">${valorStr}</div><div class="resultado-unidad">${res.unidad}</div><div class="resultado-nombre">${res.nombre}</div>`;
+        grid.appendChild(card);
+      });
+      document.getElementById('explicacionFisica').innerHTML = `<strong>Explicación física:</strong><br>La frecuencia umbral es la mínima frecuencia necesaria para liberar electrones. Solo los fotones con energía suficiente (E ≥ ϕ) logran vencer la función de trabajo del metal.`;
+      return;
+    }
+    
     // Calcular según tipo de ejercicio
     let resultados = {};
     let desarrollo = [];
     let explicacion = '';
-    
-    console.log('Ejercicio:', ejercicioActual.numero, 'Tipo:', ejercicioActual.tipo);
     
     // Forzar funciones específicas por número de ejercicio
     if (ejercicioActual.numero === 21) {
