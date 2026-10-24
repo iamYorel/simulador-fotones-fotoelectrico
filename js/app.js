@@ -841,12 +841,16 @@ function calcularFotoelectricoUmbral(ejercicio, desarrollo) {
   if (ejercicio.numero === 21) {
     const phi_eV = parseFloat(document.getElementById('dato_funcion_trabajo').value);
     
+    desarrollo.push({ titulo: '1. Datos', contenido: `Función de trabajo ϕ = ${phi_eV} eV` });
+    
+    const phi_J = Calculos.eV_a_J(phi_eV);
+    desarrollo.push({ titulo: '2. Frecuencia umbral', contenido: `f_0 = ϕ/h = (${phi_J.toExponential(3)} J) / (${CONSTANTES.h.toExponential(3)} J·s) = ${Calculos.frecuenciaUmbral(phi_eV).toExponential(3)} Hz` });
+    
     const f0 = Calculos.frecuenciaUmbral(phi_eV);
     const lambda0_nm = Calculos.longitudOndaUmbral(phi_eV);
+    desarrollo.push({ titulo: '3. Longitud de onda umbral', contenido: `λ_0 = hc/ϕ = ${CONSTANTES.hc_eV_nm} eV·nm / ${phi_eV} eV = ${lambda0_nm.toFixed(1)} nm` });
     
-    desarrollo.push({ titulo: '1. Frecuencia umbral', contenido: `f_0 = ϕ/h = ${Calculos.eV_a_J(phi_eV).toExponential(3)} / ${CONSTANTES.h.toExponential(3)} = ${f0.toExponential(3)} Hz` });
-    desarrollo.push({ titulo: '2. Longitud de onda umbral', contenido: `λ_0 = hc/ϕ = ${CONSTANTES.hc_eV_nm} / ${phi_eV} = ${lambda0_nm.toFixed(1)} nm` });
-    desarrollo.push({ titulo: '3. Condición', contenido: `Hay emisión si f ≥ f_0 o λ ≤ λ_0 (${lambda0_nm.toFixed(1)} nm)` });
+    desarrollo.push({ titulo: '4. Conclusión', contenido: `<strong>Hay emisión fotoeléctrica si:</strong> f ≥ ${f0.toExponential(2)} Hz o λ ≤ ${lambda0_nm.toFixed(1)} nm` });
     
     resultados.frecuencia_umbral = { valor: f0, unidad: 'Hz', nombre: 'f_0' };
     resultados.longitud_onda_umbral = { valor: lambda0_nm, unidad: 'nm', nombre: 'λ_0' };
